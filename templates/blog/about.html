@@ -1,5 +1,5 @@
 {% extends 'baseHeader.html' %}
-
+{% load staticfiles %}
 {% block main %}
 <div class="content-body">
 			<div class="container">
@@ -9,7 +9,7 @@
 						<article class="post">
 							<div class="entry-content clearfix">
 								<figure class="img-responsive-center">
-									<img class="img-responsive" src="../../lynjay/static/blog/img/me.jpg" alt="Developer Image">
+									<img class="img-responsive" src="{% static 'blog/img/avatar.jpg' %}" alt="Developer Image">
 								</figure>
                                  <p>一个 立志做全栈的程序猿,热爱iOS开发,目前已转JAVA,喜欢学习新技术,拥抱开源。</p>
                                  <p>博客博客,论坛论坛!</p>
@@ -17,10 +17,10 @@
 								<div class="height-40px"></div>
 								<h2 class="title text-center">Social</h2>
 								<ul class="social">
-									<li class="weibo"><a href="http://weibo.com/Manajay_dlj"><span class="ion-android-contact"></span></a></li>
+									<li class="twitter"><a href="http://weibo.com/Manajay_dlj"><span class="ion-android-contact"></span></a></li>
 									<li class="twitter"><a href="http://twitter.com/manajay_dlj"><span class="ion-social-twitter"></span></a></li>
-									<li class="email"><a href="mailto:manajay.dlj@gmail.com"><span class="ion-email"></span></a></li>
-									<li class="github"><a href="https://github.com/manajay"><span class="ion-social-github"></span></a></li>
+									<li class="twitter"><a href="mailto:manajay.dlj@gmail.com"><span class="ion-email"></span></a></li>
+									<li class="twitter"><a href="https://github.com/manajay"><span class="ion-social-github"></span></a></li>
 								</ul>
 							</div>
 						</article>

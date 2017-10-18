@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import render , get_object_or_404
 from .models import Post , Category
 from comments.forms import CommentForm
+from django.db.models import Q
+
 
 import markdown
 # Create your views here.
@@ -11,8 +13,8 @@ def index(request):
     # 不加 - 则是正序
     post_list = Post.objects.all().order_by("-created_time")
     return render(request, 'blog/index.html',
-                  context={"title":"博客首页",
-                                   "welcome":"Lynjay在这里,欢迎访问我的博客首页!",
+                  context={"title":"Django博客",
+                                   "welcome":"欢迎访问我的博客首页!",
                            "post_list": post_list})
 
 # 注意views的视图处理函数中的参数名称 对应的是 urls 文件的正则匹配 参数
@@ -64,3 +66,19 @@ def contact(request):
 # 发送了联系我的表单请求
 def contactMe(request):
     return render(request,'blog/contact.html',context={})
+
+# 字典的键之所以叫 query 是因为我们的表单中搜索框 input 的 name 属性的值是 query
+def search(request):
+    query = request.GET.get('query')
+    error_msg = ''
+    if not query:
+        return render(request,'blog/index.html',context={
+            'error_msg': '请输入关键词'
+        })
+    else:
+        # 前缀 i 表示不区分大小写。这里 i-contains 是查询表达式（Field lookups）
+        post_list = Post.objects.filter(Q(title__icontains=query) | Q(body__icontains=query))
+        return render(request,'blog/index.html',context={
+            'error_msg': error_msg,
+            'post_list': post_list
+        })

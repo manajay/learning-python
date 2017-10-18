@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,9 +36,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'haystack',
     'lynjay',
-    'comments'
+    'comments',
 ]
+# django-haystack
+HAYSTACK_CONNECTIONS = {
+    'default' : {
+        'ENGINE': 'lynjay.whoosh_cn_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR,'whoosh_index')
+    },
+}
+
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
