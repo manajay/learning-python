@@ -53,3 +53,14 @@ def category(request,pk):
     return render(request,'blog/index.html',context={
         'post_list': post_list
     })
+
+def about(request):
+    return render(request,'blog/about.html',context={})
+
+# 跳转到联系页
+def contact(request):
+    return render(request,'blog/contact.html',context={})
+
+# 发送了联系我的表单请求
+def contactMe(request):
+    return render(request,'blog/contact.html',context={})
