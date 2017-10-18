@@ -69,15 +69,15 @@ def contactMe(request):
 
 # 字典的键之所以叫 query 是因为我们的表单中搜索框 input 的 name 属性的值是 query
 def search(request):
-    query = request.GET.get('query')
+    q = request.GET.get('q')
     error_msg = ''
-    if not query:
+    if not q:
         return render(request,'blog/index.html',context={
             'error_msg': '请输入关键词'
         })
     else:
         # 前缀 i 表示不区分大小写。这里 i-contains 是查询表达式（Field lookups）
-        post_list = Post.objects.filter(Q(title__icontains=query) | Q(body__icontains=query))
+        post_list = Post.objects.filter(Q(title__icontains=q) | Q(body__icontains=q))
         return render(request,'blog/index.html',context={
             'error_msg': error_msg,
             'post_list': post_list
