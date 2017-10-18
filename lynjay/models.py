@@ -26,6 +26,9 @@ class Tag(models.Model):
         return self.name
 
 class Post(models.Model):
+    class Meta:
+        ordering = ['-created_time','title']
+
     """
     文章的数据存储
     """
