@@ -125,6 +125,7 @@ STATIC_URL = '/static/'
 # django-haystack
 HAYSTACK_CONNECTIONS = {
     'default' : {
+        # django-haystack 开源搜索框架，搜索引擎使用Whoosh
         'ENGINE': 'lynjay.whoosh_cn_backend.WhooshEngine',
         'PATH': os.path.join(BASE_DIR,'whoosh_index')
     },
