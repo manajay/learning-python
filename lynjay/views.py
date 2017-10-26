@@ -1,25 +1,29 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import render , get_object_or_404
-from .models import Post , Category
+from django.shortcuts import render, get_object_or_404
+from .models import Post, Category
 from comments.forms import CommentForm
 from django.db.models import Q
-
-
+from django.utils.text import slugify
+from markdown.extensions.toc import TocExtension
 import markdown
+from django.views.generic import ListView, DetailView
 # Create your views here.
+
 
 def index(request):
     # 不加 - 则是正序
     post_list = Post.objects.all().order_by("-created_time")
     return render(request, 'blog/index.html',
-                  context={"title":"Django博客",
-                                   "welcome":"欢迎访问我的博客首页!",
+                  context={"title": "Django博客",
+                            "welcome": "欢迎访问我的博客首页!",
                            "post_list": post_list})
 
+
 # 注意views的视图处理函数中的参数名称 对应的是 urls 文件的正则匹配 参数
-def detail(request,pk):
+def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    post.increase_views()
     # 重新渲染post.body
     post.body = markdown.markdown(post.body,
                                   extensions=[
@@ -38,47 +42,53 @@ def detail(request,pk):
         'form': form,
         'comment_list': comment_list
     }
-    return render(request,'blog/detail.html',
+    return render(request, 'blog/detail.html',
                   context=context)
 
-def archives(request,year,month):
+
+def archives(request, year, month):
     post_list = Post.objects.filter(created_time__year=year,
                                     created_time__month=month).order_by('-created_time')
-    return render(request,"blog/index.html",context={
+    return render(request, "blog/index.html", context={
         'post_list': post_list
     })
 
-def category(request,pk):
+
+def category(request, pk):
     # 记得在开始部分导入 Category 类
-    cate = get_object_or_404(Category,pk=pk)
+    cate = get_object_or_404(Category, pk=pk)
     post_list = Post.objects.filter(category=cate).order_by('-created_time')
-    return render(request,'blog/index.html',context={
+    return render(request, 'blog/index.html', context={
         'post_list': post_list
     })
+
 
 def about(request):
-    return render(request,'blog/about.html',context={})
+    return render(request, 'blog/about.html', context={})
+
 
 # 跳转到联系页
 def contact(request):
-    return render(request,'blog/contact.html',context={})
+    return render(request, 'blog/contact.html', context={})
+
 
 # 发送了联系我的表单请求
-def contactMe(request):
-    return render(request,'blog/contact.html',context={})
+def contact_me(request):
+    return render(request, 'blog/contact.html', context={})
+
 
 # 字典的键之所以叫 query 是因为我们的表单中搜索框 input 的 name 属性的值是 query
 def search(request):
     q = request.GET.get('q')
     error_msg = ''
     if not q:
-        return render(request,'blog/index.html',context={
+        return render(request, 'blog/index.html', context={
             'error_msg': '请输入关键词'
         })
     else:
         # 前缀 i 表示不区分大小写。这里 i-contains 是查询表达式（Field lookups）
         post_list = Post.objects.filter(Q(title__icontains=q) | Q(body__icontains=q))
-        return render(request,'blog/index.html',context={
+        return render(request, 'blog/index.html', context={
             'error_msg': error_msg,
             'post_list': post_list
         })

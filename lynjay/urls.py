@@ -23,5 +23,5 @@ urlpatterns = [
     url(r'^category/(?P<pk>[0-9]+)/$',views.category,name='category'),
     url(r'^about$', views.about, name='about'),
     url(r'^contact$', views.contact, name='contact'),
-    url(r'^contactMe$',views.contactMe,name='contactMe')
+    url(r'^contact_me$',views.contact_me,name='contact_me')
 ]
