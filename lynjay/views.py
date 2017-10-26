@@ -8,12 +8,13 @@ from django.utils.text import slugify
 from markdown.extensions.toc import TocExtension
 import markdown
 from django.views.generic import ListView, DetailView
-
+from django.core.paginator import Paginator
 
 class IndexView(ListView):
     model = Post
     template_name = "blog/index.html"
     context_object_name = "post_list"
+    paginate_by = 3
 
 
 class CategoryView(IndexView):
