@@ -25,64 +25,45 @@ class CategoryView(IndexView):
         return super(CategoryView, self).get_queryset().filter(category=cate)
 
 
-def index(request):
-    # 不加 - 则是正序
-    post_list = Post.objects.all().order_by("-created_time")
-    return render(request, 'blog/index.html',
-                  context={"title": "Django博客",
-                            "welcome": "欢迎访问我的博客首页!",
-                           "post_list": post_list})
-
-
 class ArchiveView(IndexView):
     def get_queryset(self):
         archive_year = self.kwargs.get('year')
         archive_month = self.kwargs.get('month')
-        return super(ArchiveView, self).get_queryset().filter(created_time__year=archive_year,
-                                    created_time__month=archive_month)
+        return super(ArchiveView, self).get_queryset().\
+            filter(created_time__year=archive_year, created_time__month=archive_month)
 
 
-# 注意views的视图处理函数中的参数名称 对应的是 urls 文件的正则匹配 参数
-def detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    post.increase_views()
-    # 重新渲染post.body
-    post.body = markdown.markdown(post.body,
+class PostDetailView(DetailView):
+    model = Post
+    template_name = "blog/detail.html"
+    context_object_name = "post"
+
+    def get(self, request, *args, **kwargs):
+        response = super(PostDetailView, self).get(request, *args, **kwargs)
+        post = self.object
+        post.increase_views()
+        return response
+
+    def get_object(self, queryset=None):
+        post = super(PostDetailView, self).get_object(queryset=None)
+        post.body = markdown.markdown(post.body,
                                   extensions=[
                                       'markdown.extensions.extra',
                                       'markdown.extensions.codehilite',
                                       'markdown.extensions.toc',
                                   ])
-    # form
-    form = CommentForm()
-    # comment_list
-    comment_list = post.comment_set.all()
+        return post
 
-    # 传递的数据
-    context = {
-        'post': post,
-        'form': form,
-        'comment_list': comment_list
-    }
-    return render(request, 'blog/detail.html',
-                  context=context)
-
-
-def archives(request, year, month):
-    post_list = Post.objects.filter(created_time__year=year,
-                                    created_time__month=month).order_by('-created_time')
-    return render(request, "blog/index.html", context={
-        'post_list': post_list
-    })
-
-
-def category(request, pk):
-    # 记得在开始部分导入 Category 类
-    cate = get_object_or_404(Category, pk=pk)
-    post_list = Post.objects.filter(category=cate).order_by('-created_time')
-    return render(request, 'blog/index.html', context={
-        'post_list': post_list
-    })
+    def get_context_data(self, **kwargs):
+        context = super(PostDetailView, self).get_context_data(**kwargs)
+        form = CommentForm()
+        post = self.object
+        comment_list = post.comment_set.all()
+        context.update({
+            'form': form,
+            'comment_list': comment_list
+        })
+        return context
 
 
 def about(request):
