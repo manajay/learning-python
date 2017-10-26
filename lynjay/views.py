@@ -8,7 +8,21 @@ from django.utils.text import slugify
 from markdown.extensions.toc import TocExtension
 import markdown
 from django.views.generic import ListView, DetailView
-# Create your views here.
+
+
+class IndexView(ListView):
+    model = Post
+    template_name = "blog/index.html"
+    context_object_name = "post_list"
+
+
+class CategoryView(IndexView):
+    context_object_name = "post_list"
+
+    def get_queryset(self):
+        cate = get_object_or_404(Category, pk=self.kwargs.get('pk'))
+        # 覆写了父类的 get_queryset 方法。该方法默认获取指定模型的全部列表数据
+        return super(CategoryView, self).get_queryset().filter(category=cate)
 
 
 def index(request):
@@ -18,6 +32,14 @@ def index(request):
                   context={"title": "Django博客",
                             "welcome": "欢迎访问我的博客首页!",
                            "post_list": post_list})
+
+
+class ArchiveView(IndexView):
+    def get_queryset(self):
+        archive_year = self.kwargs.get('year')
+        archive_month = self.kwargs.get('month')
+        return super(ArchiveView, self).get_queryset().filter(created_time__year=archive_year,
+                                    created_time__month=archive_month)
 
 
 # 注意views的视图处理函数中的参数名称 对应的是 urls 文件的正则匹配 参数
