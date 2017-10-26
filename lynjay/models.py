@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 import markdown
 from django.utils.html import strip_tags
+from django.db.models.aggregates import Count
 
 
 # Create your models here.
@@ -25,6 +26,11 @@ class Category(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
+
+    @staticmethod
+    def get_tags():
+        tag_list = Tag.objects.annotate(num_posts=Count('post')).filter(num_posts__gt=0)
+        return tag_list
 
     def __str__(self):
         return self.name
